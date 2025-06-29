@@ -14,8 +14,26 @@ export const useAssetsStatusTracking = (props: { storyId: string }) => {
         storyId: props.storyId,
       },
     }),
-    // 停止轮询 - 临时修复
-    refetchInterval: false,
+    // 智能轮询：只有当还有待处理的任务时才轮询
+    refetchInterval: (query) => {
+      const data = query.state.data
+      if (!data?.assetsByScene) return false
+
+      // 检查是否还有待处理的任务
+      const hasPendingTasks = Object.values(data.assetsByScene).some(sceneAssets => {
+        const audioPending = sceneAssets.audio?.status === 'pending' || sceneAssets.audio?.status === 'processing'
+        const imagesPending = sceneAssets.images.some(img => img.status === 'pending' || img.status === 'processing')
+        return audioPending || imagesPending
+      })
+
+      console.log('[useAssetsStatusTracking] Polling decision:', {
+        storyId: props.storyId,
+        hasPendingTasks,
+        totalScenes: Object.keys(data.assetsByScene).length
+      })
+
+      return hasPendingTasks ? 3000 : false // 3秒轮询间隔
+    },
     refetchOnWindowFocus: false, // 避免窗口聚焦时不必要的请求
   })
 

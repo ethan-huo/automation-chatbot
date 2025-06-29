@@ -60,8 +60,19 @@ export function WhiteboardAnimation({
       input: { taskId: animationTaskId! },
     }),
     enabled: !!animationTaskId,
-    // 停止轮询 - 临时修复
-    refetchInterval: false,
+    // 智能轮询：只有当任务还在处理中时才轮询
+    refetchInterval: (query) => {
+      const status = query.state.data?.status
+      const shouldPoll = status === 'pending' || status === 'processing'
+
+      console.log('[WhiteboardAnimation] Polling decision:', {
+        taskId: animationTaskId,
+        status,
+        shouldPoll,
+      })
+
+      return shouldPoll ? 3000 : false // 3秒轮询间隔
+    },
     refetchOnWindowFocus: false, // 避免窗口聚焦时不必要的请求
   })
 
