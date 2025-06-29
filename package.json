@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "// dev:mastra": "mastra dev --dir mastra",
-    "// dev": "turbo run dev:web dev:mastra --parallel",
     "build": "tsx lib/db/migrate && next build",
     "start": "next start",
     "format": "prettier --write \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"artifacts/**/*.{ts,tsx}\" \"*.{ts,tsx,mjs,json}\"",
