@@ -2,6 +2,7 @@ import { imagine, watch } from '@/integration/302/midjourney'
 import { put } from '@/lib/blob'
 import { env } from '@/lib/env'
 import { splitImageToQuadrantArray } from '@/lib/image'
+import { invariant } from '@/lib/invariant'
 import { nanoid } from 'nanoid'
 import { firstValueFrom, lastValueFrom } from 'rxjs'
 
@@ -58,6 +59,7 @@ export async function generateAndUploadImages({
     }
 
     const taskId = imagineResult.result
+    invariant(taskId, 'taskId is required')
     console.log('[generateAndUploadImages] task submitted, taskId:', taskId)
 
     // Watch task progress until completion
@@ -77,7 +79,7 @@ export async function generateAndUploadImages({
     console.log(
       '[generateAndUploadImages] task completed, downloading image...',
     )
-
+    invariant(watchResult.imageUrl, 'imageUrl is required')
     // Download the generated image (Midjourney 4-grid)
     const imageResponse = await fetch(watchResult.imageUrl)
     if (!imageResponse.ok) {

@@ -124,6 +124,7 @@ export const generateWhiteboardAnimation = tool({
       created_at: now,
       updated_at: now,
       progress: 0,
+      // @ts-expect-error
       scenes: scenes.map((scene) => ({
         scene_id: scene.scene_id,
         audio_status: 'pending',

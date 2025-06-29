@@ -353,14 +353,23 @@ async function setupRealComposition(
 
   // 计算并设置合成的总时长
   try {
-    const totalDuration = audioLayer.duration || 0
+    const totalDurationSeconds = audioLayer.clips.reduce((acc, clip) => {
+      return acc + clip.duration.seconds
+    }, 0)
+    const totalDuration = new core.Timestamp(0, totalDurationSeconds)
+
+    if (!(totalDurationSeconds > 0)) {
+      console.error(
+        '🎬 [VideoComposer] Total duration is 0, setting to 30 seconds',
+      )
+      throw new Error('Total duration is 0')
+    }
+
     console.log(
-      `🎬 [VideoComposer] Setting composition duration to ${totalDuration} frames (${totalDuration / 30}s)`,
+      `🎬 [VideoComposer] Setting composition duration to ${totalDuration.seconds} seconds`,
     )
 
-    if (totalDuration > 0) {
-      composition.duration = totalDuration
-    }
+    composition.duration = new core.Timestamp(0, 30)
   } catch (error) {
     console.error(
       '🎬 [VideoComposer] Error setting composition duration:',
@@ -372,5 +381,3 @@ async function setupRealComposition(
     '🎬 [VideoComposer] Real composition setup complete using sequential layers',
   )
 }
-
-// 旧的 setupStoryComposition 函数已被 setupRealComposition 替代
