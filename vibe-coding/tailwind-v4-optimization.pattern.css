@@ -1,0 +1,316 @@
+/**
+ * @fileoverview
+ * Tailwind CSS v4 优化模式和现代语法指南
+ * 展示如何使用v4的新特性简化CSS代码，避免AI生成冗余样式
+ */
+
+/* ================================================================================================
+   1. 尺寸属性优化 - 使用 size-* 替代重复的 h-* w-*
+   ================================================================================================ */
+
+/* ❌ AI常见的冗余写法 */
+.iconOld {
+  @apply h-4 w-4;
+}
+
+.avatarOld {
+  @apply h-10 w-10 rounded-full;
+}
+
+.buttonOld {
+  @apply h-9 w-24 px-3;
+}
+
+/* ✅ v4优化写法 */
+.iconNew {
+  @apply size-4; /* 等同于 h-4 w-4 */
+}
+
+.avatarNew {
+  @apply size-10 rounded-full;
+}
+
+.buttonNew {
+  @apply h-9 w-24 px-3; /* 不同尺寸时仍使用分别设置 */
+}
+
+/* 特殊形状简化 */
+.squareBox {
+  @apply square-8; /* 创建 8x8 正方形 */
+}
+
+.circleIcon {
+  @apply circle-6; /* 创建直径为 6 的圆形 */
+}
+
+/* ================================================================================================
+   2. 间距属性优化 - 使用逻辑属性
+   ================================================================================================ */
+
+/* ❌ 传统物理属性（不支持RTL） */
+.cardOld {
+  @apply ml-4 mr-2 pl-6 pr-4;
+  @apply text-left;
+}
+
+/* ✅ 现代逻辑属性（自动RTL支持） */
+.cardNew {
+  @apply ms-4 me-2 ps-6 pe-4; /* margin/padding start/end */
+  @apply text-start; /* 逻辑对齐 */
+}
+
+/* 常用逻辑属性映射 */
+.logicalSpacing {
+  /* margin-inline: ms-*, me-* */
+  @apply ms-4; /* margin-inline-start */
+  @apply me-2; /* margin-inline-end */
+  
+  /* padding-inline: ps-*, pe-* */
+  @apply ps-6; /* padding-inline-start */
+  @apply pe-4; /* padding-inline-end */
+  
+  /* border-inline: border-s-*, border-e-* */
+  @apply border-s-2 border-e border-primary;
+}
+
+/* ================================================================================================
+   3. 颜色系统优化
+   ================================================================================================ */
+
+/* ❌ 旧的颜色透明度写法 */
+.colorOld {
+  @apply bg-blue-500 bg-opacity-10;
+  @apply text-gray-900 text-opacity-80;
+}
+
+/* ✅ v4简化的透明度语法 */
+.colorNew {
+  @apply bg-primary/10; /* 10% 透明度 */
+  @apply text-foreground/80; /* 80% 透明度 */
+}
+
+/* 动态颜色混合 */
+.dynamicColor {
+  @apply bg-[color-mix(in_srgb,theme(colors.primary)_80%,transparent)];
+  @apply text-[color-mix(in_srgb,theme(colors.foreground)_90%,theme(colors.background))];
+}
+
+/* 语义化颜色使用 */
+.semanticColors {
+  @apply bg-background text-foreground;
+  @apply border-border hover:bg-accent;
+  @apply focus:ring-ring focus:ring-offset-background;
+}
+
+/* ================================================================================================
+   4. 布局优化模式
+   ================================================================================================ */
+
+/* 现代网格布局 */
+.modernGrid {
+  @apply grid gap-4;
+  @apply grid-cols-[repeat(auto-fit,minmax(250px,1fr))]; /* 自适应网格 */
+}
+
+/* Flexbox 优化 */
+.flexOptimized {
+  @apply flex items-center gap-3; /* 使用 gap 替代 space-x */
+}
+
+/* ❌ 旧的间距方式 */
+.flexOld {
+  @apply flex items-center space-x-3;
+}
+
+/* ✅ 新的间距方式 */
+.flexNew {
+  @apply flex items-center gap-3; /* 更可靠的间距控制 */
+}
+
+/* ================================================================================================
+   5. 响应式设计优化
+   ================================================================================================ */
+
+/* 容器查询优化 */
+.containerOptimized {
+  @apply bg-card rounded-lg p-4;
+  container-type: inline-size;
+  
+  & .content {
+    @apply flex flex-col gap-2;
+  }
+}
+
+@container (min-width: 300px) {
+  .containerOptimized .content {
+    @apply flex-row items-center gap-4;
+  }
+}
+
+/* 现代断点使用 */
+.responsiveComponent {
+  @apply size-8 md:size-10 lg:size-12; /* 响应式尺寸 */
+  @apply p-2 md:p-4 lg:p-6; /* 响应式内边距 */
+}
+
+/* ================================================================================================
+   6. 交互状态优化
+   ================================================================================================ */
+
+/* 现代状态选择器 */
+.interactiveElement {
+  @apply p-3 rounded-md bg-muted/50 transition-colors;
+  
+  /* 使用 :is() 简化多状态 */
+  &:is(:hover, :focus-visible) {
+    @apply bg-muted;
+  }
+  
+  /* 使用 :has() 进行上下文感知 */
+  &:has(input:checked) {
+    @apply bg-primary/10 border-primary;
+  }
+  
+  /* 使用 :where() 降低特异性 */
+  &:where(.variant-outline) {
+    @apply border border-border bg-transparent;
+  }
+}
+
+/* ================================================================================================
+   7. 动画和过渡优化
+   ================================================================================================ */
+
+/* 现代动画属性 */
+.animationOptimized {
+  @apply transition-all duration-200 ease-out;
+  @apply hover:scale-105 hover:shadow-lg;
+  
+  /* 使用 motion-safe 和 motion-reduce */
+  @apply motion-safe:animate-fade-in;
+  @apply motion-reduce:animate-none;
+}
+
+/* 自定义动画关键帧 */
+@keyframes fade-in-up {
+  from {
+    @apply opacity-0 translate-y-4;
+  }
+  to {
+    @apply opacity-100 translate-y-0;
+  }
+}
+
+.fadeInUp {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+/* ================================================================================================
+   8. 表单控件优化
+   ================================================================================================ */
+
+/* 现代表单样式 */
+.formControl {
+  @apply flex h-10 w-full rounded-md border border-input;
+  @apply bg-background px-3 py-2 text-sm;
+  @apply ring-offset-background file:border-0 file:bg-transparent;
+  @apply placeholder:text-muted-foreground;
+  @apply focus-visible:outline-none focus-visible:ring-2;
+  @apply focus-visible:ring-ring focus-visible:ring-offset-2;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* 复选框和单选按钮优化 */
+.checkboxModern {
+  @apply size-4 rounded border border-primary;
+  @apply text-primary-foreground focus:ring-2 focus:ring-primary;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* ================================================================================================
+   9. 组件变体模式
+   ================================================================================================ */
+
+/* 按钮变体基础 */
+.buttonBase {
+  @apply inline-flex items-center justify-center rounded-md;
+  @apply text-sm font-medium transition-colors;
+  @apply focus-visible:outline-none focus-visible:ring-2;
+  @apply focus-visible:ring-ring focus-visible:ring-offset-2;
+  @apply disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* 尺寸变体 */
+.buttonSm { @apply h-9 px-3; }
+.buttonMd { @apply h-10 px-4 py-2; }
+.buttonLg { @apply h-11 px-8; }
+.buttonIcon { @apply size-10; } /* 图标按钮使用 size */
+
+/* 颜色变体 */
+.buttonPrimary {
+  @apply bg-primary text-primary-foreground;
+  @apply hover:bg-primary/90;
+}
+
+.buttonSecondary {
+  @apply bg-secondary text-secondary-foreground;
+  @apply hover:bg-secondary/80;
+}
+
+.buttonGhost {
+  @apply hover:bg-accent hover:text-accent-foreground;
+}
+
+/* ================================================================================================
+   10. 调试和开发优化
+   ================================================================================================ */
+
+/* 开发时调试样式 */
+.debugMode {
+  @apply outline outline-2 outline-red-500 outline-offset-2;
+  
+  &::before {
+    content: attr(data-debug);
+    @apply absolute -top-6 left-0 bg-red-500 text-white;
+    @apply px-2 py-1 text-xs rounded;
+  }
+}
+
+/* 性能优化提示 */
+.performanceOptimized {
+  /* 使用 transform 而非改变布局属性 */
+  @apply transition-transform duration-200;
+  @apply hover:scale-105; /* 而非 hover:w-full */
+  
+  /* 使用 opacity 而非 visibility */
+  @apply transition-opacity duration-200;
+  @apply hover:opacity-80; /* 而非 hover:invisible */
+  
+  /* 使用 will-change 提示浏览器优化 */
+  will-change: transform, opacity;
+}
+
+/* ================================================================================================
+   AI编码优化速查表
+   ================================================================================================ */
+
+/*
+❌ AI常见冗余写法 → ✅ v4优化写法
+
+h-4 w-4              → size-4
+h-10 w-10            → size-10
+ml-4 mr-4            → mx-4 或 ms-4 me-4
+pl-6 pr-6            → px-6 或 ps-6 pe-6
+text-left            → text-start
+bg-blue-500/10       → bg-primary/10
+space-x-4            → gap-4
+flex items-center    → flex items-center (保持不变)
+grid-cols-3 gap-4    → grid-cols-3 gap-4 (保持不变)
+
+记住：
+- 相同尺寸用 size-*
+- 不同尺寸仍用 h-* w-*
+- 逻辑属性支持RTL
+- gap 比 space-* 更可靠
+- 语义化颜色比具体颜色更好
+*/
