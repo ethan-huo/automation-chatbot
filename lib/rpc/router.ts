@@ -503,6 +503,7 @@ const getWhiteboardAnimationStatus = implement
             {
               taskId: speedPainterTaskId,
               status: speedPainterStatus.status,
+              fullResponse: speedPainterStatus, // 添加完整响应以便调试
             },
           )
 
@@ -513,6 +514,16 @@ const getWhiteboardAnimationStatus = implement
           let newS3Url = currentTask.s3Url
           let newS3Key = currentTask.s3Key
           let newErrorMessage = currentTask.errorMessage
+
+          console.log(
+            '[getWhiteboardAnimationStatus] 🔍 Status comparison:',
+            {
+              speedPainterStatus: speedPainterStatus.status,
+              currentDbStatus: currentTask.status,
+              isFinished: speedPainterStatus.status === 'FINISHED',
+              isError: speedPainterStatus.status === 'ERROR',
+            },
+          )
 
           if (speedPainterStatus.status === 'FINISHED') {
             needsUpdate = true
