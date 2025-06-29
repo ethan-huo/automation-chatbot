@@ -7,6 +7,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { AlertCircle, Loader2, VideoIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { useAnimationAssets } from './provider'
+
 type WhiteboardAnimationProps = {
   imageAssetId: string
   storyId: string
@@ -25,6 +27,8 @@ export function WhiteboardAnimation({
   const [animationTaskId, setAnimationTaskId] = useState<string | null>(null)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [hasAutoStarted, setHasAutoStarted] = useState(false)
+
+  const { whiteboardAnimationTasks$ } = useAnimationAssets()
 
   // 创建白板动画任务的 mutation
   const createAnimationMutation = useMutation({
@@ -133,6 +137,46 @@ export function WhiteboardAnimation({
 
   const isCompleted = animationStatus?.status === 'completed'
   const isFailed = animationStatus?.status === 'failed'
+
+  // 注册完成的白板动画任务到全局状态
+  useEffect(() => {
+    if (
+      animationTaskId &&
+      animationStatus?.status === 'completed' &&
+      animationStatus?.s3Url
+    ) {
+      console.log(
+        '[WhiteboardAnimation] 📝 Registering completed animation task:',
+        {
+          taskId: animationTaskId,
+          videoUrl: animationStatus.s3Url,
+          imageAssetId,
+          sceneId,
+        },
+      )
+
+      // 检查是否已经注册过这个任务
+      const existingTask = whiteboardAnimationTasks$
+        .peek()
+        .find((task) => task.taskId === animationTaskId)
+
+      if (!existingTask) {
+        // 向全局状态注册完成的动画任务
+        whiteboardAnimationTasks$.push({
+          taskId: animationTaskId,
+          status: 'completed',
+          videoUrl: animationStatus.s3Url,
+        })
+      }
+    }
+  }, [
+    animationTaskId,
+    animationStatus?.status,
+    animationStatus?.s3Url,
+    whiteboardAnimationTasks$,
+    imageAssetId,
+    sceneId,
+  ])
 
   return (
     <div className={`h-full ${className}`}>

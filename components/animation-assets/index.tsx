@@ -52,29 +52,8 @@ function AnimationAssetsContent() {
     <div className="space-y-4">
       {/* Animation Assets Section */}
       <div className="mx-auto max-w-2xl rounded-lg border p-4">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center">
           <h3 className="text-md font-semibold">Animation Scenes</h3>
-          <Button
-            onClick={startRendering}
-            variant="ghost"
-            className="h-12 w-12 p-0"
-            disabled={!isAllCompleted}
-          >
-            <Memo>
-              {() =>
-                isAllCompleted$.get() ? (
-                  <Play className="h-6 w-6" />
-                ) : (
-                  <CircularProgress
-                    size={40}
-                    fillColor="#3b82f6"
-                    total={totalTasks$.get()}
-                    current={completedTasks$.get()}
-                  />
-                )
-              }
-            </Memo>
-          </Button>
         </div>
         <ScrollArea className="h-[600px] w-full">
           <div className="space-y-4 pr-4">
