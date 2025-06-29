@@ -11,7 +11,7 @@ type SceneProps = {
 export function Scene({ scene }: SceneProps) {
   return (
     <div className="rounded-lg border p-3">
-      <h4 className="mb-3 text-sm font-medium text-gray-700">
+      <h4 className="mb-3 text-sm font-medium text-foreground">
         Scene {scene.scene_id}: {scene.title}
       </h4>
       <div className="space-y-3">

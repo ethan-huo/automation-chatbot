@@ -18,7 +18,7 @@ export function Shot({ shot, sceneId }: ShotProps) {
 
   return (
     <div className="space-y-4">
-      <div className="text-sm leading-relaxed text-gray-600">
+      <div className="text-muted-foreground text-sm leading-relaxed">
         {shot.narration_text}
       </div>
 
@@ -69,7 +69,7 @@ export function Shot({ shot, sceneId }: ShotProps) {
       </div>
 
       {/* 下方：Audio 横跨整行 */}
-      <div className="flex h-8 flex-col rounded-lg border bg-gray-50 *:h-full">
+      <div className="flex h-8 flex-col rounded-full border *:h-full">
         <AudioTask task={shot.audio_task} />
       </div>
     </div>
