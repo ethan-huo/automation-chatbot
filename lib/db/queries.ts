@@ -4,7 +4,7 @@ import type { ArtifactKind } from '@/components/artifact'
 import type { VisibilityType } from '@/components/visibility-selector'
 import type { SQL } from 'drizzle-orm'
 import { and, asc, count, desc, eq, gt, gte, inArray, lt } from 'drizzle-orm'
-import { ulid as generateUUID } from 'ulid'
+
 
 import type { Chat, DBMessage, Suggestion, User } from './schema'
 import { ChatSDKError } from '../errors'
@@ -47,22 +47,7 @@ export async function createUser(email: string, password: string) {
   }
 }
 
-export async function createGuestUser() {
-  const email = `guest-${Date.now()}`
-  const password = generateHashedPassword(generateUUID())
 
-  try {
-    return await db.insert(user).values({ email, password }).returning({
-      id: user.id,
-      email: user.email,
-    })
-  } catch (error) {
-    throw new ChatSDKError(
-      'bad_request:database',
-      'Failed to create guest user',
-    )
-  }
-}
 
 export async function saveChat({
   id,

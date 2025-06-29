@@ -50,8 +50,7 @@ export class AuthPage {
 
     await authMenuItem.click();
 
-    const userEmail = this.page.getByTestId('user-email');
-    await expect(userEmail).toContainText('Guest');
+    await expect(this.page).toHaveURL('/login');
   }
 
   async expectToastToContain(text: string) {
