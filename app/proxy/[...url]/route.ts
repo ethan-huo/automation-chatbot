@@ -1,21 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server'
-
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { url: string[] } }
-) {
+export async function GET(request: Request) {
   try {
     // 重构 URL：/proxy/https/example.com/path -> https://example.com/path
-    const urlParts = params.url
+    const url = new URL(request.url)
+    const pathSegments = url.pathname.split('/').filter(Boolean)
+    // 移除 'proxy' 前缀
+    const urlParts = pathSegments.slice(1)
     if (!urlParts || urlParts.length < 2) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Invalid URL format. Use /proxy/https/domain.com/path' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const protocol = urlParts[0] // https 或 http
-    const domain = urlParts[1]   // domain.com
+    const domain = urlParts[1] // domain.com
     const path = urlParts.slice(2).join('/') // path/to/file
 
     const targetUrl = `${protocol}://${domain}${path ? '/' + path : ''}`
@@ -33,16 +31,17 @@ export async function GET(
       console.error(
         '[Proxy] Failed to fetch:',
         response.status,
-        response.statusText
+        response.statusText,
       )
-      return NextResponse.json(
+      return Response.json(
         { error: `Failed to fetch: ${response.status}` },
-        { status: response.status }
+        { status: response.status },
       )
     }
 
     // 获取内容类型
-    const contentType = response.headers.get('content-type') || 'application/octet-stream'
+    const contentType =
+      response.headers.get('content-type') || 'application/octet-stream'
     const contentLength = response.headers.get('content-length')
 
     console.log('[Proxy] Fetched successfully:', {
@@ -52,7 +51,7 @@ export async function GET(
     })
 
     // 创建响应，添加 CORS 头
-    return new NextResponse(response.body, {
+    return new Response(response.body, {
       status: 200,
       headers: {
         'Content-Type': contentType,
@@ -65,16 +64,13 @@ export async function GET(
     })
   } catch (error) {
     console.error('[Proxy] Error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 // 处理 OPTIONS 请求（CORS 预检）
 export async function OPTIONS() {
-  return new NextResponse(null, {
+  return new Response(null, {
     status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
