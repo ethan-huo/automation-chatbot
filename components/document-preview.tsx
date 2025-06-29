@@ -163,6 +163,7 @@ export function DocumentPreview({
           id: artifact.documentId,
           createdAt: new Date(),
           userId: 'noop',
+          chatId: 'noop',
         }
       : null
 
@@ -288,7 +289,7 @@ const PureDocumentHeader = ({
           <ImageIcon />
         ) : kind === 'project' ? (
           <PlayIcon />
-        ) : kind === 'script' ? (
+        ) : kind === 'story' ? (
           <PenIcon />
         ) : (
           <FileIcon />
