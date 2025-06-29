@@ -294,15 +294,15 @@ const createWhiteboardAnimation = implement
 
       try {
         const speedPainterResult = await createSpeedPainterTask({
-          baseUrl: 'https://api.a1d.ai',
+        baseUrl: 'https://api.a1d.ai',
           imageUrl: imageAsset[0].s3Url,
           mimeType: 'image/jpeg',
           sketchDuration: Math.ceil(audioDuration), // 直接使用验证过的音频时长
           source: 'api',
           colorFillDuration: 0,
-          needCanvas: true,
+          needHand: true,
+          needCanvas: false,
           canvasTitle: DEFAULT_CANVAS_TITLE,
-          needHand: false,
           handTitle: DEFAULT_HAND_TITLE,
           needFadeout: true,
           fps: 24,
@@ -515,15 +515,12 @@ const getWhiteboardAnimationStatus = implement
           let newS3Key = currentTask.s3Key
           let newErrorMessage = currentTask.errorMessage
 
-          console.log(
-            '[getWhiteboardAnimationStatus] 🔍 Status comparison:',
-            {
-              speedPainterStatus: speedPainterStatus.status,
-              currentDbStatus: currentTask.status,
-              isFinished: speedPainterStatus.status === 'FINISHED',
-              isError: speedPainterStatus.status === 'ERROR',
-            },
-          )
+          console.log('[getWhiteboardAnimationStatus] 🔍 Status comparison:', {
+            speedPainterStatus: speedPainterStatus.status,
+            currentDbStatus: currentTask.status,
+            isFinished: speedPainterStatus.status === 'FINISHED',
+            isError: speedPainterStatus.status === 'ERROR',
+          })
 
           if (speedPainterStatus.status === 'FINISHED') {
             needsUpdate = true

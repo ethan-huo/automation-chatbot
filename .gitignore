@@ -48,3 +48,10 @@ tsconfig.tsbuildinfo
 /docs/refs
 /refs
 dump.rdb
+
+# sst
+.sst
+
+
+# open-next
+.open-next
