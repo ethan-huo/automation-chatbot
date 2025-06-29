@@ -48,7 +48,9 @@ export const privateEnvSchema = type({
   'BLOB_READ_WRITE_TOKEN?': 'string',
 })
 
-export const env = privateEnvSchema.assert(process.env)
+type PrivateEnv = typeof privateEnvSchema.infer
+
+export const env: PrivateEnv = process.env
 
 export type PublicEnv = typeof publicEnvSchema.infer
 
