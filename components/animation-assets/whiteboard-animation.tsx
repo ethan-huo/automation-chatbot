@@ -125,7 +125,7 @@ export function WhiteboardAnimation({
     imageUrl,
     animationTaskId,
     hasAutoStarted,
-    createAnimationMutation,
+    createAnimationMutation.isPending,
     imageAssetId,
     storyId,
     sceneId,

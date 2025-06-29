@@ -11,6 +11,7 @@ export type AnimationAssetTask = {
   status: 'pending' | 'processing' | 'completed' | 'failed'
   audio_url?: string
   image_url?: string
+  video_url?: string // 白板动画的视频 URL
 }
 
 export type Shot = {
@@ -18,6 +19,7 @@ export type Shot = {
   narration_text: string
   audio_task: AnimationAssetTask
   image_tasks: AnimationAssetTask[] // Multiple image tasks for "card drawing" effect
+  whiteboard_animation_task?: AnimationAssetTask // Whiteboard animation task (optional, created after image completion)
 }
 
 export type Scene = {
@@ -112,6 +114,8 @@ export const generateAnimationAssetsV2 = tool({
                 status: 'pending',
               },
             ],
+            // 白板动画任务初始为 undefined，会在图片完成后创建
+            whiteboard_animation_task: undefined,
           },
         ],
       }

@@ -23,13 +23,20 @@ export const useAssetsStatusTracking = (props: { storyId: string }) => {
       const hasPendingTasks = Object.values(data.assetsByScene).some(sceneAssets => {
         const audioPending = sceneAssets.audio?.status === 'pending' || sceneAssets.audio?.status === 'processing'
         const imagesPending = sceneAssets.images.some(img => img.status === 'pending' || img.status === 'processing')
-        return audioPending || imagesPending
+        const whiteboardPending = sceneAssets.whiteboardAnimation?.status === 'pending' || sceneAssets.whiteboardAnimation?.status === 'processing'
+        return audioPending || imagesPending || whiteboardPending
       })
 
       console.log('[useAssetsStatusTracking] Polling decision:', {
         storyId: props.storyId,
         hasPendingTasks,
-        totalScenes: Object.keys(data.assetsByScene).length
+        totalScenes: Object.keys(data.assetsByScene).length,
+        sceneDetails: Object.entries(data.assetsByScene).map(([sceneId, assets]) => ({
+          sceneId,
+          audio: assets.audio?.status || 'missing',
+          images: assets.images.map(img => img.status),
+          whiteboard: assets.whiteboardAnimation?.status || 'missing'
+        }))
       })
 
       return hasPendingTasks ? 3000 : false // 3秒轮询间隔
@@ -61,6 +68,11 @@ export const useAssetsStatusTracking = (props: { storyId: string }) => {
                 image_url: imageAsset?.s3Url || task.image_url,
               }
             }),
+            whiteboard_animation_task: sceneAssets.whiteboardAnimation ? {
+              task_id: sceneAssets.whiteboardAnimation.id,
+              status: sceneAssets.whiteboardAnimation.status,
+              image_url: sceneAssets.whiteboardAnimation.s3Url,
+            } : shot.whiteboard_animation_task,
           })),
         }
       })
