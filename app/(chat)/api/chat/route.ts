@@ -23,6 +23,7 @@ import {
   saveMessages,
 } from '@/lib/db/queries'
 import { ChatSDKError } from '@/lib/errors'
+import { createInMemoryPubSub } from '@/lib/resumable-stream-local'
 import { generateUUID, getTrailingMessageId } from '@/lib/utils'
 import { geolocation } from '@vercel/functions'
 import {
@@ -46,9 +47,12 @@ let globalStreamContext: ResumableStreamContext | null = null
 
 function getStreamContext() {
   if (!globalStreamContext) {
+    const pubSub = createInMemoryPubSub()
     try {
       globalStreamContext = createResumableStreamContext({
         waitUntil: after,
+        publisher: pubSub,
+        subscriber: pubSub,
       })
     } catch (error: any) {
       if (error.message.includes('REDIS_URL')) {
