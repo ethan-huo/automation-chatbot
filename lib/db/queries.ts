@@ -26,9 +26,26 @@ import { generateHashedPassword } from './utils'
 
 // biome-ignore lint: Forbidden non-null assertion.
 export async function getUser(email: string): Promise<Array<User>> {
+  console.log('🔍 getUser called with email:', email)
+
   try {
-    return await getDatabase().select().from(user).where(eq(user.email, email))
+    console.log('📊 Getting database instance...')
+    const db = getDatabase()
+    console.log('✅ Database instance obtained')
+
+    console.log('🔎 Executing query: SELECT * FROM user WHERE email =', email)
+    const result = await db.select().from(user).where(eq(user.email, email))
+    console.log('✅ Query executed successfully, result:', result)
+
+    return result
   } catch (error) {
+    console.error('💥 Database error in getUser:', error)
+    console.error('Error details:', {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+      name: (error as Error).name
+    })
+
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get user by email',

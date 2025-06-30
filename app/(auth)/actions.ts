@@ -54,30 +54,50 @@ export const register = async (
   _: RegisterActionState,
   formData: FormData,
 ): Promise<RegisterActionState> => {
+  console.log('🚀 Register function started')
+
   try {
+    const email = formData.get('email')
+    const password = formData.get('password')
+    console.log('📝 Form data:', { email, password: password ? '***' : null })
+
     const validatedData = authFormSchema.parse({
-      email: formData.get('email'),
-      password: formData.get('password'),
+      email,
+      password,
     })
+    console.log('✅ Data validation passed:', { email: validatedData.email })
 
-    const [user] = await getUser(validatedData.email)
+    console.log('🔍 Checking if user exists...')
+    const users = await getUser(validatedData.email)
+    console.log('📊 User query result:', { count: users.length, users })
 
-    if (user) {
+    if (users.length > 0) {
+      console.log('❌ User already exists')
       return { status: 'user_exists' } as RegisterActionState
     }
+
+    console.log('👤 Creating new user...')
     await createUser(validatedData.email, validatedData.password)
+    console.log('✅ User created successfully')
+
+    console.log('🔐 Attempting to sign in...')
     await signIn('credentials', {
       email: validatedData.email,
       password: validatedData.password,
       redirect: false,
     })
+    console.log('✅ Sign in successful')
 
     return { status: 'success' }
   } catch (error) {
+    console.error('💥 Register error:', error)
+
     if (error instanceof z.ZodError) {
+      console.log('❌ Validation error:', error.errors)
       return { status: 'invalid_data' }
     }
 
+    console.log('❌ Unknown error:', error)
     return { status: 'failed' }
   }
 }

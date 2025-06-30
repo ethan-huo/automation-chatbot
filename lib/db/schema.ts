@@ -1,7 +1,6 @@
 import type { InferSelectModel } from 'drizzle-orm'
 import {
   boolean,
-  foreignKey,
   json,
   pgSchema,
   pgTable,
@@ -31,9 +30,7 @@ export const chat = pgTable('Chat', {
     .$defaultFn(() => ulid()),
   createdAt: timestamp('createdAt').notNull(),
   title: text('title').notNull(),
-  userId: text('userId')
-    .notNull()
-    .references(() => user.id),
+  userId: text('userId').notNull(),
   visibility: varchar('visibility', { enum: ['public', 'private'] })
     .notNull()
     .default('private'),
@@ -48,9 +45,7 @@ export const messageDeprecated = pgTable('Message', {
     .primaryKey()
     .notNull()
     .$defaultFn(() => ulid()),
-  chatId: text('chatId')
-    .notNull()
-    .references(() => chat.id),
+  chatId: text('chatId').notNull(),
   role: varchar('role').notNull(),
   content: json('content').notNull(),
   createdAt: timestamp('createdAt').notNull(),
@@ -63,9 +58,7 @@ export const message = pgTable('Message_v2', {
     .primaryKey()
     .notNull()
     .$defaultFn(() => ulid()),
-  chatId: text('chatId')
-    .notNull()
-    .references(() => chat.id),
+  chatId: text('chatId').notNull(),
   role: varchar('role').notNull(),
   parts: json('parts').notNull(),
   attachments: json('attachments').notNull(),
@@ -79,12 +72,8 @@ export type DBMessage = InferSelectModel<typeof message>
 export const voteDeprecated = pgTable(
   'Vote',
   {
-    chatId: text('chatId')
-      .notNull()
-      .references(() => chat.id),
-    messageId: text('messageId')
-      .notNull()
-      .references(() => messageDeprecated.id),
+    chatId: text('chatId').notNull(),
+    messageId: text('messageId').notNull(),
     isUpvoted: boolean('isUpvoted').notNull(),
   },
   (table) => {
@@ -99,12 +88,8 @@ export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>
 export const vote = pgTable(
   'Vote_v2',
   {
-    chatId: text('chatId')
-      .notNull()
-      .references(() => chat.id),
-    messageId: text('messageId')
-      .notNull()
-      .references(() => message.id),
+    chatId: text('chatId').notNull(),
+    messageId: text('messageId').notNull(),
     isUpvoted: boolean('isUpvoted').notNull(),
   },
   (table) => {
@@ -124,18 +109,14 @@ export const document = pgTable(
       .$defaultFn(() => ulid()),
     createdAt: timestamp('createdAt').notNull(),
     title: text('title').notNull(),
-    chatId: text('chatId')
-      .notNull()
-      .references(() => chat.id),
+    chatId: text('chatId').notNull(),
     content: text('content'),
     kind: varchar('text', {
       enum: ['text', 'code', 'image', 'sheet', 'project', 'story'],
     })
       .notNull()
       .default('text'),
-    userId: text('userId')
-      .notNull()
-      .references(() => user.id),
+    userId: text('userId').notNull(),
   },
   (table) => {
     return {
@@ -158,17 +139,11 @@ export const suggestion = pgTable(
     suggestedText: text('suggestedText').notNull(),
     description: text('description'),
     isResolved: boolean('isResolved').notNull().default(false),
-    userId: text('userId')
-      .notNull()
-      .references(() => user.id),
+    userId: text('userId').notNull(),
     createdAt: timestamp('createdAt').notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.id] }),
-    documentRef: foreignKey({
-      columns: [table.documentId, table.documentCreatedAt],
-      foreignColumns: [document.id, document.createdAt],
-    }),
   }),
 )
 
@@ -185,10 +160,6 @@ export const stream = pgTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.id] }),
-    chatRef: foreignKey({
-      columns: [table.chatId],
-      foreignColumns: [chat.id],
-    }),
   }),
 )
 

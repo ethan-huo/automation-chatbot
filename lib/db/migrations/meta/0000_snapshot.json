@@ -1,5 +1,5 @@
 {
-  "id": "04e367b6-5c80-44cd-827e-277070af4571",
+  "id": "6b2def6a-bfce-46e8-9c6f-2e6523a70ac4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -136,21 +136,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Chat_userId_User_id_fk": {
-          "name": "Chat_userId_User_id_fk",
-          "tableFrom": "Chat",
-          "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -203,34 +189,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Document_chatId_Chat_id_fk": {
-          "name": "Document_chatId_Chat_id_fk",
-          "tableFrom": "Document",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "Document_userId_User_id_fk": {
-          "name": "Document_userId_User_id_fk",
-          "tableFrom": "Document",
-          "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "Document_id_createdAt_pk": {
           "name": "Document_id_createdAt_pk",
@@ -284,21 +243,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Message_v2_chatId_Chat_id_fk": {
-          "name": "Message_v2_chatId_Chat_id_fk",
-          "tableFrom": "Message_v2",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -338,21 +283,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Message_chatId_Chat_id_fk": {
-          "name": "Message_chatId_Chat_id_fk",
-          "tableFrom": "Message",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -380,21 +311,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Stream_chatId_Chat_id_fk": {
-          "name": "Stream_chatId_Chat_id_fk",
-          "tableFrom": "Stream",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "Stream_id_pk": {
           "name": "Stream_id_pk",
@@ -466,36 +383,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Suggestion_userId_User_id_fk": {
-          "name": "Suggestion_userId_User_id_fk",
-          "tableFrom": "Suggestion",
-          "tableTo": "User",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "Suggestion_documentId_documentCreatedAt_Document_id_createdAt_fk": {
-          "name": "Suggestion_documentId_documentCreatedAt_Document_id_createdAt_fk",
-          "tableFrom": "Suggestion",
-          "tableTo": "Document",
-          "columnsFrom": [
-            "documentId",
-            "documentCreatedAt"
-          ],
-          "columnsTo": [
-            "id",
-            "createdAt"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "Suggestion_id_pk": {
           "name": "Suggestion_id_pk",
@@ -558,34 +446,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Vote_v2_chatId_Chat_id_fk": {
-          "name": "Vote_v2_chatId_Chat_id_fk",
-          "tableFrom": "Vote_v2",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "Vote_v2_messageId_Message_v2_id_fk": {
-          "name": "Vote_v2_messageId_Message_v2_id_fk",
-          "tableFrom": "Vote_v2",
-          "tableTo": "Message_v2",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "Vote_v2_chatId_messageId_pk": {
           "name": "Vote_v2_chatId_messageId_pk",
@@ -621,34 +482,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "Vote_chatId_Chat_id_fk": {
-          "name": "Vote_chatId_Chat_id_fk",
-          "tableFrom": "Vote",
-          "tableTo": "Chat",
-          "columnsFrom": [
-            "chatId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "Vote_messageId_Message_id_fk": {
-          "name": "Vote_messageId_Message_id_fk",
-          "tableFrom": "Vote",
-          "tableTo": "Message",
-          "columnsFrom": [
-            "messageId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "Vote_chatId_messageId_pk": {
           "name": "Vote_chatId_messageId_pk",
