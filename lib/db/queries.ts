@@ -8,7 +8,7 @@ import { and, asc, count, desc, eq, gt, gte, inArray, lt } from 'drizzle-orm'
 
 import type { Chat, DBMessage, Suggestion, User } from './schema'
 import { ChatSDKError } from '../errors'
-import { db } from './index'
+import { db, getDatabase } from './index'
 import {
   animationAsset,
   chat,
@@ -28,7 +28,7 @@ import { generateHashedPassword } from './utils'
 // biome-ignore lint: Forbidden non-null assertion.
 export async function getUser(email: string): Promise<Array<User>> {
   try {
-    return await db.select().from(user).where(eq(user.email, email))
+    return await getDatabase().select().from(user).where(eq(user.email, email))
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
@@ -41,7 +41,7 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password)
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword })
+    return await getDatabase().insert(user).values({ email, password: hashedPassword })
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to create user')
   }
@@ -61,7 +61,7 @@ export async function saveChat({
   visibility: VisibilityType
 }) {
   try {
-    return await db.insert(chat).values({
+    return await getDatabase().insert(chat).values({
       id,
       createdAt: new Date(),
       userId,
@@ -75,9 +75,9 @@ export async function saveChat({
 
 export async function deleteChatById({ id }: { id: string }) {
   try {
-    await db.delete(vote).where(eq(vote.chatId, id))
-    await db.delete(message).where(eq(message.chatId, id))
-    await db.delete(stream).where(eq(stream.chatId, id))
+    await getDatabase().delete(vote).where(eq(vote.chatId, id))
+    await getDatabase().delete(message).where(eq(message.chatId, id))
+    await getDatabase().delete(stream).where(eq(stream.chatId, id))
 
     const [chatsDeleted] = await db
       .delete(chat)
@@ -170,7 +170,7 @@ export async function getChatsByUserId({
 
 export async function getChatById({ id }: { id: string }) {
   try {
-    const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id))
+    const [selectedChat] = await getDatabase().select().from(chat).where(eq(chat.id, id))
     return selectedChat
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to get chat by id')
@@ -183,7 +183,7 @@ export async function saveMessages({
   messages: Array<DBMessage>
 }) {
   try {
-    return await db.insert(message).values(messages)
+    return await getDatabase().insert(message).values(messages)
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to save messages')
   }
@@ -225,7 +225,7 @@ export async function voteMessage({
         .set({ isUpvoted: type === 'up' })
         .where(and(eq(vote.messageId, messageId), eq(vote.chatId, chatId)))
     }
-    return await db.insert(vote).values({
+    return await getDatabase().insert(vote).values({
       chatId,
       messageId,
       isUpvoted: type === 'up',
@@ -237,7 +237,7 @@ export async function voteMessage({
 
 export async function getVotesByChatId({ id }: { id: string }) {
   try {
-    return await db.select().from(vote).where(eq(vote.chatId, id))
+    return await getDatabase().select().from(vote).where(eq(vote.chatId, id))
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
@@ -394,7 +394,7 @@ export async function saveSuggestions({
   suggestions: Array<Suggestion>
 }) {
   try {
-    return await db.insert(suggestion).values(suggestions)
+    return await getDatabase().insert(suggestion).values(suggestions)
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to save suggestions')
   }
@@ -420,7 +420,7 @@ export async function getSuggestionsByDocumentId({
 
 export async function getMessageById({ id }: { id: string }) {
   try {
-    return await db.select().from(message).where(eq(message.id, id))
+    return await getDatabase().select().from(message).where(eq(message.id, id))
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
@@ -471,7 +471,7 @@ export async function updateChatVisiblityById({
   visibility: 'private' | 'public'
 }) {
   try {
-    return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId))
+    return await getDatabase().update(chat).set({ visibility }).where(eq(chat.id, chatId))
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',

@@ -6,7 +6,7 @@ import {
   DEFAULT_HAND_TITLE,
   getTaskStatus,
 } from '@/integration/speedpainter'
-import { db, t } from '@/lib/db'
+import { db, getDatabase, t } from '@/lib/db'
 import { os } from '@orpc/server'
 import { and, eq } from 'drizzle-orm'
 import { ulid } from 'ulid'
@@ -260,7 +260,7 @@ const createWhiteboardAnimation = implement
 
       // 创建白板动画任务
       const animationTaskId = ulid()
-      await db.insert(t.animationAsset).values({
+      await getDatabase().insert(t.animationAsset).values({
         id: animationTaskId,
         storyId,
         sceneId,
@@ -711,7 +711,7 @@ const createStoryVideoComposition = implement
 
       // 创建合成任务
       const compositionTaskId = ulid()
-      await db.insert(t.animationAsset).values({
+      await getDatabase().insert(t.animationAsset).values({
         id: compositionTaskId,
         storyId,
         sceneId: 'composition', // 特殊标记表示这是合成任务

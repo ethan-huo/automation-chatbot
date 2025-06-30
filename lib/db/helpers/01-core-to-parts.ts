@@ -13,6 +13,7 @@ import {
   vote,
   voteDeprecated,
 } from '../schema'
+import { getDatabase } from '..'
 
 config({
   path: '.env.local',
@@ -95,7 +96,7 @@ function sanitizeParts<T extends { type: string; [k: string]: any }>(
 }
 
 async function migrateMessages() {
-  const chats = await db.select().from(chat)
+  const chats = await getDatabase().select().from(chat)
 
   let processedCount = 0
 
@@ -227,14 +228,14 @@ async function migrateMessages() {
           createdAt: msg.createdAt,
         }))
 
-        await db.insert(message).values(validMessageBatch)
+        await getDatabase().insert(message).values(validMessageBatch)
       }
     }
 
     for (let j = 0; j < newVotesToInsert.length; j += INSERT_BATCH_SIZE) {
       const voteBatch = newVotesToInsert.slice(j, j + INSERT_BATCH_SIZE)
       if (voteBatch.length > 0) {
-        await db.insert(vote).values(voteBatch)
+        await getDatabase().insert(vote).values(voteBatch)
       }
     }
   }
