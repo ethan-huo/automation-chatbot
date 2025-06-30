@@ -1,7 +1,7 @@
 import * as midjourney from '@/integration/302/midjourney'
 import * as minimaxAudio from '@/integration/302/minimax-audio'
 import { createCloudflareR2PublicDevUrl, s3 } from '@/integration/s3'
-import { db, t } from '@/lib/db'
+import { getDatabase, t } from '@/lib/db'
 import { env } from '@/lib/env'
 import { getQuadrantByPosition } from '@/lib/image'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
@@ -60,7 +60,7 @@ async function updateTaskStatus(input: {
   errorMessage?: string
   metadata?: Record<string, unknown>
 }) {
-  await db
+  await getDatabase()
     .update(t.animationAsset)
     .set({
       status: input.status,
@@ -83,7 +83,7 @@ async function createTask(input: {
   metadata?: Record<string, unknown>
 }) {
   const id = ulid()
-  await db.insert(t.animationAsset).values({
+  await getDatabase().insert(t.animationAsset).values({
     id,
     storyId: input.storyId,
     sceneId: input.sceneId,

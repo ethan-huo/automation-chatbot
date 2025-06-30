@@ -6,7 +6,7 @@ import {
   DEFAULT_HAND_TITLE,
   getTaskStatus,
 } from '@/integration/speedpainter'
-import { db, getDatabase, t } from '@/lib/db'
+import { getDatabase, t } from '@/lib/db'
 import { os } from '@orpc/server'
 import { and, eq } from 'drizzle-orm'
 import { ulid } from 'ulid'
@@ -27,7 +27,7 @@ const updateProject = implement
   .handler(async ({ input, context }) => {
     const { artifactId, project } = input
 
-    await db
+    await getDatabase()
       .update(t.document)
       .set({
         content: JSON.stringify(project),
@@ -52,7 +52,7 @@ const getAnimationAsset = implement
       throw new Error('Unauthorized')
     }
 
-    const assets = await db
+    const assets = await getDatabase()
       .select()
       .from(t.animationAsset)
       .where(eq(t.animationAsset.storyId, storyId))
@@ -134,7 +134,7 @@ const createWhiteboardAnimation = implement
         '[createWhiteboardAnimation] 🔍 Checking image asset:',
         imageAssetId,
       )
-      const imageAsset = await db
+      const imageAsset = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(eq(t.animationAsset.id, imageAssetId))
@@ -174,7 +174,7 @@ const createWhiteboardAnimation = implement
       }
 
       // 检查是否已经有白板动画任务
-      const existingAnimation = await db
+      const existingAnimation = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(
@@ -199,7 +199,7 @@ const createWhiteboardAnimation = implement
         '[createWhiteboardAnimation] 🎵 Looking for audio asset for scene:',
         sceneId,
       )
-      const audioAsset = await db
+      const audioAsset = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(
@@ -260,27 +260,29 @@ const createWhiteboardAnimation = implement
 
       // 创建白板动画任务
       const animationTaskId = ulid()
-      await getDatabase().insert(t.animationAsset).values({
-        id: animationTaskId,
-        storyId,
-        sceneId,
-        assetType: 'whiteboard_animation',
-        s3Url: '',
-        s3Key: '',
-        contentType: 'video/mp4',
-        status: 'pending',
-        metadata: {
-          sourceImageAssetId: imageAssetId,
-          sourceImageUrl: imageAsset[0].s3Url,
-          sourceAudioAssetId: audioAsset[0].id,
-          sourceAudioUrl: audioAsset[0].s3Url,
-          audioDuration: audioAsset[0].duration,
-          animationType: 'whiteboard_drawing',
-          syncWithAudio: true,
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      await getDatabase()
+        .insert(t.animationAsset)
+        .values({
+          id: animationTaskId,
+          storyId,
+          sceneId,
+          assetType: 'whiteboard_animation',
+          s3Url: '',
+          s3Key: '',
+          contentType: 'video/mp4',
+          status: 'pending',
+          metadata: {
+            sourceImageAssetId: imageAssetId,
+            sourceImageUrl: imageAsset[0].s3Url,
+            sourceAudioAssetId: audioAsset[0].id,
+            sourceAudioUrl: audioAsset[0].s3Url,
+            audioDuration: audioAsset[0].duration,
+            animationType: 'whiteboard_drawing',
+            syncWithAudio: true,
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
 
       // 启动实际的白板动画生成任务
       console.log(
@@ -294,7 +296,7 @@ const createWhiteboardAnimation = implement
 
       try {
         const speedPainterResult = await createSpeedPainterTask({
-        baseUrl: 'https://api.a1d.ai',
+          baseUrl: 'https://api.a1d.ai',
           imageUrl: imageAsset[0].s3Url,
           mimeType: 'image/jpeg',
           sketchDuration: Math.ceil(audioDuration), // 直接使用验证过的音频时长
@@ -317,7 +319,7 @@ const createWhiteboardAnimation = implement
         )
 
         // 更新数据库记录，保存 SpeedPainter 任务ID
-        await db
+        await getDatabase()
           .update(t.animationAsset)
           .set({
             status: 'processing',
@@ -347,7 +349,7 @@ const createWhiteboardAnimation = implement
         )
 
         // 更新任务状态为失败
-        await db
+        await getDatabase()
           .update(t.animationAsset)
           .set({
             status: 'failed',
@@ -416,7 +418,7 @@ const getWhiteboardAnimationStatus = implement
         throw new Error('Unauthorized')
       }
 
-      const animationTask = await db
+      const animationTask = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(eq(t.animationAsset.id, taskId))
@@ -550,7 +552,7 @@ const getWhiteboardAnimationStatus = implement
           }
 
           if (needsUpdate) {
-            const [updatedTask] = await db
+            const [updatedTask] = await getDatabase()
               .update(t.animationAsset)
               .set({
                 status: newStatus,
@@ -655,7 +657,7 @@ const createStoryVideoComposition = implement
 
       // 检查所有场景的资产是否都已完成
       console.log('[createStoryVideoComposition] 🔍 Checking scene assets...')
-      const sceneAssets = await db
+      const sceneAssets = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(
@@ -711,24 +713,26 @@ const createStoryVideoComposition = implement
 
       // 创建合成任务
       const compositionTaskId = ulid()
-      await getDatabase().insert(t.animationAsset).values({
-        id: compositionTaskId,
-        storyId,
-        sceneId: 'composition', // 特殊标记表示这是合成任务
-        assetType: 'video_composition',
-        s3Url: '',
-        s3Key: '',
-        contentType: 'video/mp4',
-        status: 'pending',
-        metadata: {
-          sceneIds,
-          sceneAssets: assetsByScene,
-          compositionType: 'story_video',
-          totalScenes: sceneIds.length,
-        },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      await getDatabase()
+        .insert(t.animationAsset)
+        .values({
+          id: compositionTaskId,
+          storyId,
+          sceneId: 'composition', // 特殊标记表示这是合成任务
+          assetType: 'video_composition',
+          s3Url: '',
+          s3Key: '',
+          contentType: 'video/mp4',
+          status: 'pending',
+          metadata: {
+            sceneIds,
+            sceneAssets: assetsByScene,
+            compositionType: 'story_video',
+            totalScenes: sceneIds.length,
+          },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
 
       console.log(
         '[createStoryVideoComposition] ✅ Composition task created:',
@@ -784,7 +788,7 @@ const getVideoCompositionStatus = implement
         throw new Error('Unauthorized')
       }
 
-      const compositionTask = await db
+      const compositionTask = await getDatabase()
         .select()
         .from(t.animationAsset)
         .where(eq(t.animationAsset.id, taskId))
@@ -899,7 +903,7 @@ const getVideoCompositionStatus = implement
           }
 
           if (needsUpdate) {
-            const [updatedTask] = await db
+            const [updatedTask] = await getDatabase()
               .update(t.animationAsset)
               .set({
                 status: newStatus,

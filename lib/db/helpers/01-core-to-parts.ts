@@ -6,6 +6,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 
 import type { MessageDeprecated } from '../schema'
+import { getDatabase } from '..'
 import {
   chat,
   message,
@@ -13,7 +14,6 @@ import {
   vote,
   voteDeprecated,
 } from '../schema'
-import { getDatabase } from '..'
 
 config({
   path: '.env.local',
@@ -104,12 +104,12 @@ async function migrateMessages() {
     const chatBatch = chats.slice(i, i + BATCH_SIZE)
     const chatIds = chatBatch.map((chat) => chat.id)
 
-    const allMessages = await db
+    const allMessages = await getDatabase()
       .select()
       .from(messageDeprecated)
       .where(inArray(messageDeprecated.chatId, chatIds))
 
-    const allVotes = await db
+    const allVotes = await getDatabase()
       .select()
       .from(voteDeprecated)
       .where(inArray(voteDeprecated.chatId, chatIds))
